@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-labelledby="title desc">
+  <title id="title">AI Chat Enhancer icon</title>
+  <desc id="desc">Chat bubble with outline lines and a small sparkle.</desc>
+  <defs>
+    <linearGradient id="bg" x1="18" y1="14" x2="112" y2="118" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#24C6DC"/>
+      <stop offset=".55" stop-color="#3B82F6"/>
+      <stop offset="1" stop-color="#7C3AED"/>
+    </linearGradient>
+    <linearGradient id="panel" x1="33" y1="31" x2="94" y2="96" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#EAF4FF"/>
+    </linearGradient>
+    <filter id="shadow" x="0" y="0" width="128" height="128" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="8" stdDeviation="7" flood-color="#0F172A" flood-opacity=".22"/>
+    </filter>
+  </defs>
+  <rect width="128" height="128" rx="28" fill="url(#bg)"/>
+  <path d="M98.5 27.5c5.5 0 10 4.5 10 10v45.4c0 5.5-4.5 10-10 10H63.2L43.5 108V92.9H29.5c-5.5 0-10-4.5-10-10V37.5c0-5.5 4.5-10 10-10h69z" fill="#0F172A" opacity=".16"/>
+  <path d="M94.5 23.5c5.5 0 10 4.5 10 10v45.4c0 5.5-4.5 10-10 10H59.2L39.5 104V88.9H25.5c-5.5 0-10-4.5-10-10V33.5c0-5.5 4.5-10 10-10h69z" fill="url(#panel)" filter="url(#shadow)"/>
+  <path d="M31.5 44.5h30" stroke="#155EEF" stroke-width="8" stroke-linecap="round"/>
+  <path d="M31.5 61.5h45" stroke="#0F172A" stroke-width="7" stroke-linecap="round" opacity=".72"/>
+  <path d="M31.5 77.5h33" stroke="#0F172A" stroke-width="7" stroke-linecap="round" opacity=".46"/>
+  <path d="M83 39.5l3.7 9.8 9.8 3.7-9.8 3.7-3.7 9.8-3.7-9.8-9.8-3.7 9.8-3.7 3.7-9.8z" fill="#FACC15"/>
+  <path d="M94 63l1.8 4.8 4.8 1.8-4.8 1.8L94 76.2l-1.8-4.8-4.8-1.8 4.8-1.8L94 63z" fill="#22C55E"/>
+</svg>

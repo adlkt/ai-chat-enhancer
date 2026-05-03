@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-labelledby="title desc">
+  <title id="title">AI Chat Enhancer outline icon</title>
+  <desc id="desc">Compact chat outline with navigation marks.</desc>
+  <rect width="128" height="128" rx="28" fill="#F8FAFC"/>
+  <path d="M97 25c6.1 0 11 4.9 11 11v47c0 6.1-4.9 11-11 11H62.5L40 111V94H31c-6.1 0-11-4.9-11-11V36c0-6.1 4.9-11 11-11h66z" fill="#FFFFFF" stroke="#111827" stroke-width="8" stroke-linejoin="round"/>
+  <path d="M37 47h28" stroke="#2563EB" stroke-width="8" stroke-linecap="round"/>
+  <path d="M37 64h48" stroke="#111827" stroke-width="7" stroke-linecap="round"/>
+  <path d="M37 81h34" stroke="#111827" stroke-width="7" stroke-linecap="round" opacity=".55"/>
+  <path d="M87 36l3.2 8.6L99 48l-8.8 3.4L87 60l-3.2-8.6L75 48l8.8-3.4L87 36z" fill="#F59E0B"/>
+</svg>
