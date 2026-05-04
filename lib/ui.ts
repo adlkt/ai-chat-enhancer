@@ -39,6 +39,7 @@ export function mountPanelRoot(panelId: string) {
         --ace-strong: rgba(31, 35, 41, 0.94);
         --ace-muted: rgba(31, 35, 41, 0.24);
         --ace-outline-edge-gap: 18px;
+        --ace-outline-trigger-width: 16px;
         --ace-outline-list-width: min(286px, calc(100vw - 48px));
         position: absolute;
         top: 112px;
@@ -66,11 +67,17 @@ export function mountPanelRoot(panelId: string) {
       .ace-outline-hit {
         position: absolute;
         top: 50%;
-        right: 0;
-        width: 44px;
+        right: calc(-1 * var(--ace-outline-edge-gap));
+        width: var(--ace-outline-trigger-width);
         height: min(50vh, 440px);
         transform: translateY(-50%);
-        pointer-events: auto;
+        pointer-events: none;
+      }
+
+      .ace-outline-rail[data-suspended="true"] {
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
       }
 
       .ace-outline-tick {
