@@ -72,8 +72,11 @@ pnpm build              # Chromium 生产构建
 pnpm build:firefox      # Firefox 生产构建
 pnpm zip                # 生成 Chrome 发布包
 pnpm zip:firefox        # 生成 Firefox 发布包
+pnpm crx                # 生成可拖拽安装的 Chrome CRX 包
 pnpm compile            # 类型检查（不输出文件）
 ```
+
+`pnpm crx` 会输出 `.output/ai-chat-enhancer-0.0.0-chrome.crx`。首次执行会在 `.output/crx-key.pem` 生成打包私钥；后续 release 要复用同一个私钥，否则扩展 ID 会变化。
 
 ---
 

@@ -72,8 +72,11 @@ pnpm build              # Chromium production build
 pnpm build:firefox      # Firefox production build
 pnpm zip                # Create release ZIP for Chrome
 pnpm zip:firefox        # Create release ZIP for Firefox
+pnpm crx                # Create a drag-installable Chrome CRX package
 pnpm compile            # Type-check without emitting
 ```
+
+`pnpm crx` writes `.output/ai-chat-enhancer-0.0.0-chrome.crx`. The first run creates the packing key at `.output/crx-key.pem`; reuse the same key for future releases, otherwise the extension ID will change.
 
 ---
 
