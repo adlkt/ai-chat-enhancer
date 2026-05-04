@@ -70,13 +70,15 @@ The extension's content script runs on `chatgpt.com/*` and `chat.deepseek.com/*`
 ```bash
 pnpm build              # Chromium production build
 pnpm build:firefox      # Firefox production build
-pnpm zip                # Create release ZIP for Chrome
+pnpm zip                # Create the recommended Chrome release ZIP
 pnpm zip:firefox        # Create release ZIP for Firefox
-pnpm crx                # Create a drag-installable Chrome CRX package
+pnpm crx                # Create a Chrome CRX package; Chrome stable usually blocks external installs
 pnpm compile            # Type-check without emitting
 ```
 
-`pnpm crx` writes `.output/ai-chat-enhancer-0.0.0-chrome.crx`. The first run creates the packing key at `.output/crx-key.pem`; reuse the same key for future releases, otherwise the extension ID will change.
+For normal Chrome stable installation, download `.output/ai-chat-enhancer-0.0.0-chrome.zip`, unzip it, open `chrome://extensions`, enable Developer mode, then choose "Load unpacked". Chrome stable usually rejects locally packed `.crx` files with `CRX_REQUIRED_PROOF_MISSING`.
+
+`pnpm crx` writes `.output/ai-chat-enhancer-0.0.0-chrome.crx`. The first run creates the packing key at `.output/crx-key.pem`; reuse the same key for future releases, otherwise the extension ID will change. This CRX is mainly for Chromium-compatible environments that allow external CRX installation.
 
 ---
 

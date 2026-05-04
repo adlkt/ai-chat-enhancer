@@ -70,13 +70,15 @@ pnpm dev:firefox  # Firefox（热重载）
 ```bash
 pnpm build              # Chromium 生产构建
 pnpm build:firefox      # Firefox 生产构建
-pnpm zip                # 生成 Chrome 发布包
+pnpm zip                # 生成 Chrome 发布包（推荐用户下载后解压安装）
 pnpm zip:firefox        # 生成 Firefox 发布包
-pnpm crx                # 生成可拖拽安装的 Chrome CRX 包
+pnpm crx                # 生成 Chrome CRX 包（Chrome 稳定版通常会拦截外部安装）
 pnpm compile            # 类型检查（不输出文件）
 ```
 
-`pnpm crx` 会输出 `.output/ai-chat-enhancer-0.0.0-chrome.crx`。首次执行会在 `.output/crx-key.pem` 生成打包私钥；后续 release 要复用同一个私钥，否则扩展 ID 会变化。
+普通用户在 Chrome 稳定版中安装时，推荐下载 `.output/ai-chat-enhancer-0.0.0-chrome.zip`，解压后进入 `chrome://extensions`，开启开发者模式，再选择“加载已解压的扩展程序”。Chrome 稳定版通常会拒绝直接拖拽安装本地打包的 `.crx`，并提示 `CRX_REQUIRED_PROOF_MISSING`。
+
+`pnpm crx` 会输出 `.output/ai-chat-enhancer-0.0.0-chrome.crx`。首次执行会在 `.output/crx-key.pem` 生成打包私钥；后续 release 要复用同一个私钥，否则扩展 ID 会变化。该 CRX 主要用于允许外部 CRX 安装的 Chromium 兼容环境。
 
 ---
 
