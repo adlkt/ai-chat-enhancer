@@ -11,6 +11,15 @@ import { mountPanelRoot, unmountPanelRoot } from '@/lib/ui';
 
 const PANEL_ID = 'chatgpt-outline';
 const STORAGE_KEY = 'aiChatEnhancerState';
+const PANEL_Z_INDEX = '1000';
+const TOP_LAYER_CACHE_TTL_MS = 120;
+const TOP_LAYER_SELECTOR = [
+  '#modal-image-gen-lightbox',
+  'dialog[open]',
+  '[aria-modal="true"]',
+  '[role="dialog"]',
+  '[role="alertdialog"]',
+].join(',');
 
 interface OutlineState {
   items: ChatMessageOutlineItem[];
@@ -25,6 +34,8 @@ let currentState: OutlineState = {
 let visibilityTracker: ReturnType<typeof createVisibleElementTracker> | null = null;
 let cleanupPanelEvents: (() => void) | null = null;
 let outlineOpen = false;
+let topLayerCacheCheckedAt = 0;
+let topLayerCacheResult = false;
 
 function queryMessageElements(): HTMLElement[] {
   return Array.from(
@@ -119,6 +130,59 @@ function isTextTruncated(title: HTMLElement) {
   return title.scrollWidth > title.clientWidth + 1;
 }
 
+function isVisibleTopLayerElement(element: Element) {
+  if (element.closest('#ai-chat-enhancer-host')) return false;
+
+  const rect = element.getBoundingClientRect();
+  if (rect.width <= 0 || rect.height <= 0) return false;
+  if (rect.bottom <= 0 || rect.right <= 0) return false;
+  if (rect.top >= window.innerHeight || rect.left >= window.innerWidth) return false;
+
+  const style = window.getComputedStyle(element);
+  if (style.display === 'none' || style.visibility === 'hidden' || style.opacity === '0') {
+    return false;
+  }
+
+  return true;
+}
+
+function rectCoversViewportCenter(rect: DOMRect) {
+  return (
+    rect.left <= window.innerWidth * 0.25 &&
+    rect.right >= window.innerWidth * 0.75 &&
+    rect.top <= window.innerHeight * 0.25 &&
+    rect.bottom >= window.innerHeight * 0.75
+  );
+}
+
+function isLikelyBlockingOverlay(element: Element) {
+  if (!isVisibleTopLayerElement(element)) return false;
+
+  const style = window.getComputedStyle(element);
+  if (style.position !== 'fixed' && style.position !== 'absolute') return false;
+
+  const rect = element.getBoundingClientRect();
+  const viewportArea = window.innerWidth * window.innerHeight;
+  const elementArea = Math.min(rect.width, window.innerWidth) * Math.min(rect.height, window.innerHeight);
+  const coversLargeArea = elementArea >= viewportArea * 0.35;
+
+  return coversLargeArea && rectCoversViewportCenter(rect);
+}
+
+function isPageTopLayerActive() {
+  const now = window.performance.now();
+  if (now - topLayerCacheCheckedAt < TOP_LAYER_CACHE_TTL_MS) {
+    return topLayerCacheResult;
+  }
+
+  topLayerCacheCheckedAt = now;
+  topLayerCacheResult =
+    Array.from(document.querySelectorAll(TOP_LAYER_SELECTOR)).some(isVisibleTopLayerElement) ||
+    Array.from(document.body.querySelectorAll('*')).some(isLikelyBlockingOverlay);
+
+  return topLayerCacheResult;
+}
+
 function renderPanelContent(mountNode: HTMLDivElement, state: OutlineState) {
   const tickMarkup = state.items
     .map((item, index) => {
@@ -155,7 +219,12 @@ function renderPanelContent(mountNode: HTMLDivElement, state: OutlineState) {
     })
     .join('');
   mountNode.innerHTML = `
-    <nav class="ace-outline-rail" data-open="${outlineOpen ? 'true' : 'false'}" aria-label="Conversation outline">
+    <nav
+      class="ace-outline-rail"
+      data-open="${outlineOpen ? 'true' : 'false'}"
+      data-suspended="${isPageTopLayerActive() ? 'true' : 'false'}"
+      aria-label="Conversation outline"
+    >
       <div class="ace-outline-hit" aria-hidden="true"></div>
       <div class="ace-outline-ticks">
         ${tickMarkup}
@@ -224,6 +293,17 @@ function renderPanelContent(mountNode: HTMLDivElement, state: OutlineState) {
     hoveredMessageId = undefined;
     if (tooltip) tooltip.hidden = true;
   };
+  const updateSuspendedState = () => {
+    const suspended = isPageTopLayerActive();
+    if (rail) rail.dataset.suspended = suspended ? 'true' : 'false';
+
+    if (suspended) {
+      setOpen(false);
+      hideTooltip();
+    }
+
+    return suspended;
+  };
 
   const handleClick = (event: MouseEvent) => {
     const target = event.target instanceof Element
@@ -250,6 +330,7 @@ function renderPanelContent(mountNode: HTMLDivElement, state: OutlineState) {
 
   const handleDocumentPointerMove = (event: PointerEvent) => {
     if (!rail || !hitArea || !outlineList) return;
+    if (updateSuspendedState()) return;
 
     const x = event.clientX;
     const y = event.clientY;
@@ -270,6 +351,7 @@ function renderPanelContent(mountNode: HTMLDivElement, state: OutlineState) {
   mountNode.addEventListener('click', handleClick);
   document.addEventListener('pointermove', handleDocumentPointerMove, true);
   window.addEventListener('blur', hideTooltip);
+  updateSuspendedState();
 
   mountNode.querySelectorAll<HTMLButtonElement>('[data-message-id]').forEach((button) => {
     button.addEventListener('mouseenter', () => {
@@ -383,7 +465,7 @@ async function renderChatGptPanel() {
   const { panelHost, mountNode } = mountPanelRoot(PANEL_ID);
   panelHost.style.position = 'fixed';
   panelHost.style.inset = '0';
-  panelHost.style.zIndex = '2147483647';
+  panelHost.style.zIndex = PANEL_Z_INDEX;
   panelHost.style.pointerEvents = 'none';
 
   currentState = {
