@@ -13,6 +13,7 @@ const PANEL_ID = 'chatgpt-outline';
 const STORAGE_KEY = 'aiChatEnhancerState';
 const PANEL_Z_INDEX = '1000';
 const TOP_LAYER_CACHE_TTL_MS = 120;
+const MAX_VISIBLE_OUTLINE_TICKS = 13;
 const TOP_LAYER_SELECTOR = [
   '#modal-image-gen-lightbox',
   'dialog[open]',
@@ -183,10 +184,42 @@ function isPageTopLayerActive() {
   return topLayerCacheResult;
 }
 
+function getVisibleTickItems(state: OutlineState) {
+  if (state.items.length <= MAX_VISIBLE_OUTLINE_TICKS) {
+    return state.items;
+  }
+
+  const lastIndex = state.items.length - 1;
+  const activeIndex = Math.max(
+    0,
+    state.items.findIndex((item) => item.id === state.activeId),
+  );
+  const selectedIndexes = new Set<number>();
+
+  for (let slot = 0; slot < MAX_VISIBLE_OUTLINE_TICKS; slot += 1) {
+    selectedIndexes.add(Math.round((slot * lastIndex) / (MAX_VISIBLE_OUTLINE_TICKS - 1)));
+  }
+  selectedIndexes.add(activeIndex);
+
+  while (selectedIndexes.size > MAX_VISIBLE_OUTLINE_TICKS) {
+    const removableIndex = Array.from(selectedIndexes)
+      .filter((index) => index !== 0 && index !== lastIndex && index !== activeIndex)
+      .sort((a, b) => Math.abs(a - activeIndex) - Math.abs(b - activeIndex))[0];
+
+    if (removableIndex === undefined) break;
+    selectedIndexes.delete(removableIndex);
+  }
+
+  return Array.from(selectedIndexes)
+    .sort((a, b) => a - b)
+    .map((index) => state.items[index]);
+}
+
 function renderPanelContent(mountNode: HTMLDivElement, state: OutlineState) {
-  const tickMarkup = state.items
-    .map((item, index) => {
-      const isActive = item.id === state.activeId || (!state.activeId && index === 0);
+  const visibleTickItems = getVisibleTickItems(state);
+  const tickMarkup = visibleTickItems
+    .map((item) => {
+      const isActive = item.id === state.activeId;
 
       return `
         <button
@@ -242,6 +275,7 @@ function renderPanelContent(mountNode: HTMLDivElement, state: OutlineState) {
   const rail = mountNode.querySelector<HTMLElement>('.ace-outline-rail');
   const tooltip = mountNode.querySelector<HTMLDivElement>('.ace-outline-tooltip');
   const hitArea = mountNode.querySelector<HTMLElement>('.ace-outline-hit');
+  const tickList = mountNode.querySelector<HTMLElement>('.ace-outline-ticks');
   const outlineList = mountNode.querySelector<HTMLElement>('.ace-outline-list');
   let closeTimer: number | undefined;
   const blurOutlineFocus = () => {
@@ -348,13 +382,33 @@ function renderPanelContent(mountNode: HTMLDivElement, state: OutlineState) {
     }
   };
 
+  const handleTickListWheel = (event: WheelEvent) => {
+    if (!outlineList) return;
+    if (updateSuspendedState()) return;
+
+    cancelClose();
+    setOpen(true);
+    outlineList.scrollBy({
+      top: event.deltaY,
+      left: event.deltaX,
+      behavior: 'auto',
+    });
+    event.preventDefault();
+    event.stopPropagation();
+  };
+
   mountNode.addEventListener('click', handleClick);
+  tickList?.addEventListener('wheel', handleTickListWheel, { passive: false });
   document.addEventListener('pointermove', handleDocumentPointerMove, true);
   window.addEventListener('blur', hideTooltip);
   updateSuspendedState();
 
   mountNode.querySelectorAll<HTMLButtonElement>('[data-message-id]').forEach((button) => {
     button.addEventListener('mouseenter', () => {
+      if (updateSuspendedState()) return;
+      cancelClose();
+      setOpen(true);
+
       if (!tooltip) return;
 
       const text = button.dataset.tooltip;
@@ -396,6 +450,7 @@ function renderPanelContent(mountNode: HTMLDivElement, state: OutlineState) {
     cancelClose();
     hideTooltip();
     mountNode.removeEventListener('click', handleClick);
+    tickList?.removeEventListener('wheel', handleTickListWheel);
     document.removeEventListener('pointermove', handleDocumentPointerMove, true);
     window.removeEventListener('blur', hideTooltip);
   };
