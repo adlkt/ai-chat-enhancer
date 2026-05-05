@@ -217,6 +217,7 @@ function getVisibleTickItems(state: OutlineState) {
 
 function renderPanelContent(mountNode: HTMLDivElement, state: OutlineState) {
   const visibleTickItems = getVisibleTickItems(state);
+  const tickTrackHeight = visibleTickItems.length * 18 + Math.max(0, visibleTickItems.length - 1) * 8;
   const tickMarkup = visibleTickItems
     .map((item) => {
       const isActive = item.id === state.activeId;
@@ -256,6 +257,7 @@ function renderPanelContent(mountNode: HTMLDivElement, state: OutlineState) {
       class="ace-outline-rail"
       data-open="${outlineOpen ? 'true' : 'false'}"
       data-suspended="${isPageTopLayerActive() ? 'true' : 'false'}"
+      style="--ace-outline-track-height: ${tickTrackHeight}px;"
       aria-label="Conversation outline"
     >
       <div class="ace-outline-hit" aria-hidden="true"></div>

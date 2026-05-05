@@ -40,8 +40,10 @@ export function mountPanelRoot(panelId: string) {
         --ace-muted: rgba(31, 35, 41, 0.24);
         --ace-outline-edge-gap: 18px;
         --ace-outline-trigger-width: 16px;
+        --ace-outline-mark-width: 22px;
         --ace-outline-list-width: min(286px, calc(100vw - 48px));
-        --ace-outline-panel-height: min(38vh, 340px);
+        --ace-outline-panel-max-height: min(38vh, 340px);
+        --ace-outline-track-height: 18px;
         position: absolute;
         top: 112px;
         right: var(--ace-outline-edge-gap);
@@ -57,11 +59,11 @@ export function mountPanelRoot(panelId: string) {
         top: 50%;
         right: 0;
         width: 36px;
-        height: var(--ace-outline-panel-height);
+        height: min(var(--ace-outline-track-height), var(--ace-outline-panel-max-height));
         display: flex;
         flex-direction: column;
         align-items: flex-end;
-        justify-content: space-between;
+        justify-content: flex-start;
         gap: 8px;
         overflow: hidden;
         transform: translateY(-50%);
@@ -73,7 +75,7 @@ export function mountPanelRoot(panelId: string) {
         top: 50%;
         right: calc(-1 * var(--ace-outline-edge-gap));
         width: var(--ace-outline-trigger-width);
-        height: var(--ace-outline-panel-height);
+        height: min(var(--ace-outline-track-height), var(--ace-outline-panel-max-height));
         transform: translateY(-50%);
         pointer-events: none;
       }
@@ -88,7 +90,7 @@ export function mountPanelRoot(panelId: string) {
         appearance: none;
         position: relative;
         flex: 0 0 18px;
-        width: 26px;
+        width: 34px;
         height: 18px;
         padding: 0;
         border: 0;
@@ -101,8 +103,8 @@ export function mountPanelRoot(panelId: string) {
         content: "";
         position: absolute;
         top: 50%;
-        right: 5px;
-        width: 14px;
+        right: 4px;
+        width: var(--ace-outline-mark-width);
         height: 3px;
         border-radius: 999px;
         transform: translateY(-50%);
@@ -131,11 +133,11 @@ export function mountPanelRoot(panelId: string) {
         top: 50%;
         right: 0;
         width: var(--ace-outline-list-width);
-        height: var(--ace-outline-panel-height);
-        max-height: var(--ace-outline-panel-height);
+        max-height: var(--ace-outline-panel-max-height);
         transform: translateY(-50%);
         opacity: 0;
         pointer-events: none;
+        overflow-x: hidden;
         overflow-y: auto;
         overscroll-behavior: contain;
         padding: 12px 8px 12px 16px;
@@ -196,7 +198,7 @@ export function mountPanelRoot(panelId: string) {
 
       .ace-outline-entry-mark {
         justify-self: end;
-        width: 14px;
+        width: var(--ace-outline-mark-width);
         height: 3px;
         border-radius: 999px;
         background: rgba(31, 35, 41, 0.22);
