@@ -41,6 +41,7 @@ export function mountPanelRoot(panelId: string) {
         --ace-outline-edge-gap: 18px;
         --ace-outline-trigger-width: 16px;
         --ace-outline-list-width: min(286px, calc(100vw - 48px));
+        --ace-outline-panel-height: min(38vh, 340px);
         position: absolute;
         top: 112px;
         right: var(--ace-outline-edge-gap);
@@ -53,14 +54,17 @@ export function mountPanelRoot(panelId: string) {
 
       .ace-outline-ticks {
         position: absolute;
-        top: 0;
+        top: 50%;
         right: 0;
-        bottom: 0;
         width: 36px;
-        display: grid;
-        align-content: center;
-        gap: 12px;
-        justify-items: end;
+        height: var(--ace-outline-panel-height);
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 8px;
+        overflow: hidden;
+        transform: translateY(-50%);
         pointer-events: auto;
       }
 
@@ -69,7 +73,7 @@ export function mountPanelRoot(panelId: string) {
         top: 50%;
         right: calc(-1 * var(--ace-outline-edge-gap));
         width: var(--ace-outline-trigger-width);
-        height: min(50vh, 440px);
+        height: var(--ace-outline-panel-height);
         transform: translateY(-50%);
         pointer-events: none;
       }
@@ -83,6 +87,7 @@ export function mountPanelRoot(panelId: string) {
       .ace-outline-tick {
         appearance: none;
         position: relative;
+        flex: 0 0 18px;
         width: 26px;
         height: 18px;
         padding: 0;
@@ -95,11 +100,12 @@ export function mountPanelRoot(panelId: string) {
       .ace-outline-tick::before {
         content: "";
         position: absolute;
-        top: 8px;
+        top: 50%;
         right: 5px;
         width: 14px;
         height: 3px;
         border-radius: 999px;
+        transform: translateY(-50%);
         background: rgba(31, 35, 41, 0.22);
       }
 
@@ -125,11 +131,13 @@ export function mountPanelRoot(panelId: string) {
         top: 50%;
         right: 0;
         width: var(--ace-outline-list-width);
-        max-height: min(48vh, 420px);
+        height: var(--ace-outline-panel-height);
+        max-height: var(--ace-outline-panel-height);
         transform: translateY(-50%);
         opacity: 0;
         pointer-events: none;
         overflow-y: auto;
+        overscroll-behavior: contain;
         padding: 12px 8px 12px 16px;
         border-radius: 14px;
         background: rgba(255, 255, 255, 0.96);
